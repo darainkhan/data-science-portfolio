@@ -1,20 +1,20 @@
-# 🤖 Agentic AI — Partner Funding Intelligence System
+# 🤖 Agentic AI — Multi-Source Intelligence System
 
 ## Overview
-Designed and built a multi-source AI agent that combines qualitative knowledge (program documentation, wikis, guides) with quantitative data analysis (SQL-backed metrics) to serve as a unified intelligence layer for a cloud provider's Partner Funding programs.
+Designed and built a multi-source AI agent that combines qualitative knowledge (program documentation, wikis, guides) with quantitative data analysis (SQL-backed metrics) to serve as a unified intelligence layer for an enterprise incentive and reimbursement platform.
 
-The agent handles natural language queries across 8 funding programs, triages stuck requests, and provides data-driven answers to operational and strategic questions.
+The agent handles natural language queries across 8 incentive programs, triages stuck requests, and provides data-driven answers to operational and strategic questions.
 
 ---
 
 ## Problem Statement
-Partner funding operations teams were spending significant time:
+Operations teams were spending significant time:
 - Manually looking up request statuses across multiple systems
 - Answering repetitive eligibility and process questions
 - Running ad-hoc SQL queries for metrics and reporting
 - Navigating multiple dashboards and wikis for information
 
-**Goal**: Build a single conversational interface that unifies all funding knowledge and data access.
+**Goal**: Build a single conversational interface that unifies all program knowledge and data access.
 
 ---
 
@@ -24,7 +24,7 @@ Partner funding operations teams were spending significant time:
 ┌─────────────────────────────────────────────────────┐
 │                   User Query                         │
 │   "How many requests were approved for Program A    │
-│    in Q1 2026 in NAMER?"                            │
+│    in Q1 2026 in Region 1?"                         │
 └─────────────────────┬───────────────────────────────┘
                       │
                       ▼
@@ -39,7 +39,7 @@ Partner funding operations teams were spending significant time:
 │  Quantitative │ │Qualitative│ │  Dashboard   │
 │  Data Agent   │ │ Knowledge │ │  Integration │
 │              │ │   Agent   │ │              │
-│ SQL queries  │ │ Wiki/PDF  │ │  QuickSight  │
+│ SQL queries  │ │ Wiki/PDF  │ │  BI tool     │
 │ against      │ │ program   │ │  visual      │
 │ metrics DB   │ │ rules &   │ │  reporting   │
 │              │ │ processes │ │              │
@@ -52,18 +52,18 @@ Partner funding operations teams were spending significant time:
 
 | Source | Type | What It Provides |
 |--------|------|-----------------|
-| Metrics Super Table | Structured (SQL) | Request metrics, approved amounts, launched ARR, partner/geo/program breakdowns |
-| Funding Dashboard | Visual (QuickSight) | Business reporting, wallet views, request tracking |
+| Metrics Super Table | Structured (SQL) | Request metrics, approved amounts, launched revenue, partner/geo/program breakdowns |
+| Program Dashboard | Visual (BI Tool) | Business reporting, budget views, request tracking |
 | Program Wiki | Unstructured (text) | Program eligibility, submission workflows, deadlines, escalation paths |
-| Benefits Guide | Document (PDF) | Benefit amounts by designation, program caps, reimbursement rules |
+| Benefits Guide | Document (PDF) | Benefit amounts by tier, program caps, reimbursement rules |
 
 ---
 
 ## Capabilities
 
 ### Quantitative Queries
-- Request metrics by program, geo, partner, time period
-- Approved amounts and launched ARR analysis
+- Request metrics by program, region, partner, time period
+- Approved amounts and revenue attribution analysis
 - Stuck/orphaned request identification and triage
 - Aging reports and pipeline health metrics
 - YoY comparisons and trend analysis
@@ -100,7 +100,7 @@ Partner funding operations teams were spending significant time:
 
 ### Security & Access Control
 - Row-Level Security (RLS) enforced on all data queries
-- Users only see data for their authorized partners/geos/programs
+- Users only see data for their authorized partners/regions/programs
 - No raw SQL exposed to end users — agent generates and executes queries internally
 
 ---
@@ -109,7 +109,7 @@ Partner funding operations teams were spending significant time:
 
 | Metric | Before | After |
 |--------|--------|-------|
-| Time to answer funding questions | 15-30 min (manual lookup) | < 30 seconds |
+| Time to answer program questions | 15-30 min (manual lookup) | < 30 seconds |
 | Systems consulted per query | 3-4 (wiki + dashboard + DB + PDF) | 1 (agent) |
 | Escalation routing accuracy | Variable (depends on who you ask) | Consistent (rules-based) |
 | Self-service capability | Low (required analyst support) | High (natural language) |
@@ -118,29 +118,29 @@ Partner funding operations teams were spending significant time:
 
 ## Predictive Model Extension (Proposed)
 
-Beyond the operational agent, I proposed a predictive ML layer to forecast ARR from funded opportunities:
+Beyond the operational agent, I proposed a predictive ML layer to forecast revenue from incentivized opportunities:
 
 ### Model Design
 | Component | Detail |
 |-----------|--------|
 | Model | XGBoost Regressor |
-| Target | Launched ARR per funded opportunity |
-| Key Features | Program type, funding amount, partner tier, partner historical ROI, customer geo/segment |
+| Target | Revenue per incentivized opportunity |
+| Key Features | Program type, incentive amount, partner tier, partner historical ROI, customer region/segment |
 | Evaluation | MAPE |
-| Transformation | Log transform (ARR is right-skewed) |
+| Transformation | Log transform (revenue is right-skewed) |
 
 ### Partner Performance Framework
 ```
-Performance Score = Actual ARR / Predicted ARR
+Performance Score = Actual Revenue / Predicted Revenue
 
-> 1.3  → Overperformer (increase funding)
+> 1.3  → Overperformer (increase investment)
 1.0-1.3 → On Track (maintain)
 0.7-1.0 → Underperformer (review & coach)
-< 0.7  → Significant Underperformer (reduce funding)
+< 0.7  → Significant Underperformer (reduce investment)
 ```
 
 ### Why This Matters
-Raw ARR comparisons are unfair — a partner generating $400K ARR in APJ SMB with $50K funding may be outperforming a partner generating $2M in NAMER Enterprise with $500K funding. The model adjusts for context.
+Raw revenue comparisons are unfair — a partner generating $400K in a smaller region with $50K investment may be outperforming a partner generating $2M in a large enterprise market with $500K investment. The model adjusts for context.
 
 ---
 
@@ -158,9 +158,9 @@ Raw ARR comparisons are unfair — a partner generating $400K ARR in APJ SMB wit
 ---
 
 ## Tools & Technologies
-- Multi-Agent Orchestrator (MCP-based)
+- Multi-Agent Orchestrator (LLM-based tool integration)
 - SQL (metrics database)
-- QuickSight (dashboard integration)
+- BI Dashboard (visual reporting)
 - Document parsing (PDF/wiki ingestion)
 - XGBoost (proposed predictive model)
 - Python, pandas, scikit-learn
@@ -171,11 +171,11 @@ Raw ARR comparisons are unfair — a partner generating $400K ARR in APJ SMB wit
 ```
 ├── README.md
 ├── docs/
-│   ├── ARR_Prediction_Model_Proposal.md   # Full ML proposal
-│   └── Agent_Architecture.md              # Design decisions & tradeoffs
+│   ├── Revenue_Prediction_Model_Proposal.md   # Full ML proposal
+│   └── Agent_Architecture.md                  # Design decisions & tradeoffs
 ```
 
 ---
 
 ## Note
-This project was built within an enterprise cloud provider's internal systems. Code and data cannot be shared publicly due to confidentiality. This README documents the architecture, approach, and impact for portfolio purposes.
+This project was built within an enterprise organization's internal systems. Code and data cannot be shared publicly due to confidentiality. This README documents the architecture, approach, and impact for portfolio purposes.
