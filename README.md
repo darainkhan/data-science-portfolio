@@ -2,6 +2,8 @@
 
 End-to-end machine learning projects, data engineering pipelines, and agentic AI systems — from EDA through modeling, evaluation, and business operationalization.
 
+> **Note**: These projects reflect real work built in my professional role. Due to confidentiality, proprietary data and business logic have been anonymized — public datasets (e.g., airfare pricing, PayPal transactions) are used to demonstrate the same techniques and methodologies applied in production.
+
 ---
 
 ## Projects
