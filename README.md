@@ -32,19 +32,7 @@ Production ETL pipeline consolidating 3 disparate source systems into a unified 
 
 ---
 
-### 3. [🔄 ETL Pipeline — Incentive Program Data Warehouse](./etl-partner-funding-pipeline/)
-Production ETL pipeline consolidating operational incentive data from 3 source systems into a unified analytical layer with currency normalization, deduplication, and data lake export.
-
-| Component | Detail |
-|-----------|--------|
-| Scale | 200+ columns, 500K+ records, 15+ source tables |
-| Layers | Extract → Consolidate → Stage → Report |
-| Key Techniques | Multi-source COALESCE, window function dedup, currency conversion, Parquet export |
-| Consumers | Dashboards, AI Agent, Finance, Leadership |
-
----
-
-### 4. [🔒 PayPal Fraud Detection](./paypal-fraud-detection/)
+### 3. [🔒 PayPal Fraud Detection](./paypal-fraud-detection/)
 Detecting fraudulent transactions with a two-threshold operationalization system (LOCK / ALERT / ALLOW).
 
 | Metric | Result |
@@ -55,7 +43,7 @@ Detecting fraudulent transactions with a two-threshold operationalization system
 
 ---
 
-### 5. [🍕 DoorDash Fraudulent Customer Detection](./doordash-fraud-detection/)
+### 4. [🍕 DoorDash Fraudulent Customer Detection](./doordash-fraud-detection/)
 Detecting fraudulent consumer accounts using behavioral and transactional features with XGBoost, featuring missingness-as-a-signal engineering and precision-recall threshold analysis.
 
 | Metric | Result |
@@ -67,7 +55,7 @@ Detecting fraudulent consumer accounts using behavioral and transactional featur
 
 ---
 
-### 6. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
+### 5. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
 Predicting flight ticket prices using XGBoost Regressor with log-transformed targets.
 
 | Metric | Result |
