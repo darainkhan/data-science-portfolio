@@ -1,95 +1,80 @@
-# 📊 Data Science & AI Portfolio
+# DoorDash Fraudulent Customer Detection
 
-End-to-end machine learning projects, data engineering pipelines, and agentic AI systems — from EDA through modeling, evaluation, and business operationalization.
+A machine learning project to detect fraudulent consumer accounts on DoorDash using XGBoost classification.
 
-> **Note**: These projects reflect real work built in my professional role. Due to confidentiality, proprietary data and business logic have been anonymized — public datasets (e.g., airfare pricing, PayPal transactions) are used to demonstrate the same techniques and methodologies applied in production.
+## Problem Statement
 
----
+Detect fraudulent consumer accounts (e.g., accounts that should be deactivated due to account takeovers or payment fraud) using behavioral and transactional features.
 
-## Projects
+## Dataset
 
-### 1. [🤖 Agentic AI — Multi-Source Intelligence System](./agentic-ai-funding-agent/)
-Multi-source AI agent combining qualitative knowledge (wikis, PDFs) with quantitative data analysis (SQL) to serve as a unified intelligence layer for enterprise operations.
+- **16,485 consumers** with 31 features
+- **Target:** `is_fraudulent` (binary: 0 or 1)
+- **Class imbalance:** ~6.6% fraud rate
 
-| Component | Detail |
-|-----------|--------|
-| Architecture | Multi-agent orchestrator with intent routing |
-| Data Sources | SQL database, BI dashboards, Wiki, PDF documents |
-| Key Feature | Natural language queries across 8 programs with row-level security |
-| Extension | Proposed predictive revenue model for partner performance scoring |
+## Approach
 
----
+1. **EDA** — Distribution analysis, null pattern investigation
+2. **Data Cleaning** — Missing value imputation, feature engineering (`_is_missing` flags)
+3. **Feature Selection** — RFECV with Random Forest (selected top 10 features)
+4. **Modeling** — XGBoost with `scale_pos_weight` for class imbalance
+5. **Evaluation** — Precision-recall analysis, fraud loss calculation
 
-### 2. [🔄 ETL Pipeline — Multi-Source Data Warehouse](./etl-data-warehouse-pipeline/)
-Production ETL pipeline consolidating 3 disparate source systems into a unified analytical layer with currency normalization, deduplication, billing reconciliation, and data lake export.
+## Results
 
-| Component | Detail |
-|-----------|--------|
-| Scale | 200+ columns, 500K+ records, 15+ source tables, daily refresh |
-| Architecture | 5-layer pipeline (Extract → Consolidate → SOT → Stage → Report) |
-| Key Techniques | Multi-source COALESCE, window function dedup, currency conversion, workflow history pivot, Parquet export |
-| Consumers | BI Dashboards, AI Agent, Finance, Leadership |
+| Metric | Not Fraud | Fraud |
+|--------|-----------|-------|
+| Precision | 0.99 | 0.78 |
+| Recall | 0.98 | 0.84 |
+| F1-Score | 0.99 | 0.81 |
 
----
+- **Overall Accuracy:** 97%
+- **Fraud caught:** 183/217 (84%)
+- **False alarms:** 53 legitimate users flagged
 
-### 3. [🔄 ETL Pipeline — Incentive Program Data Warehouse](./etl-partner-funding-pipeline/)
-Production ETL pipeline consolidating operational incentive data from 3 source systems into a unified analytical layer with currency normalization, deduplication, and data lake export.
+## Key Findings
 
-| Component | Detail |
-|-----------|--------|
-| Scale | 200+ columns, 500K+ records, 15+ source tables |
-| Layers | Extract → Consolidate → Stage → Report |
-| Key Techniques | Multi-source COALESCE, window function dedup, currency conversion, Parquet export |
-| Consumers | Dashboards, AI Agent, Finance, Leadership |
+- Missing values strongly correlate with fraud — fraudsters tend to leave fields empty
+- `_is_missing` indicator features are powerful predictors
+- Default threshold (0.5) is optimal — precision and recall cross at this point
+- Hyperparameter tuning did not improve over well-chosen defaults
 
----
+## Project Structure
 
-### 4. [🔒 PayPal Fraud Detection](./paypal-fraud-detection/)
-Detecting fraudulent transactions with a two-threshold operationalization system (LOCK / ALERT / ALLOW).
+```
+├── README.md
+├── requirements.txt
+├── notebooks/
+│   └── fraud_detection.ipynb
+├── src/
+│   ├── data_cleaning.py
+│   ├── feature_engineering.py
+│   ├── model.py
+│   └── evaluation.py
+└── study_guide.md
+```
 
-| Metric | Result |
-|--------|--------|
-| Model | XGBoost Classifier |
-| AUC-ROC | 0.969 |
-| Key Technique | Probability-based multi-action decision system |
+## Setup
 
----
+```bash
+pip install -r requirements.txt
+```
 
-### 5. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
-Predicting flight ticket prices using XGBoost Regressor with log-transformed targets.
+## Usage
 
-| Metric | Result |
-|--------|--------|
-| Model | XGBoost Regressor |
-| MAPE | 52.60% |
-| Key Technique | Log transformation of skewed target |
+Run the notebook end-to-end or use the modular scripts:
 
----
-
-## Skills Demonstrated
-
-| Skill | Projects |
-|-------|----------|
-| Agentic AI / Multi-Agent Systems | Intelligence Agent |
-| RAG Architecture | Intelligence Agent |
-| ETL Pipeline Design | Data Warehouse, Incentive Pipeline |
-| Data Warehousing | Data Warehouse, Incentive Pipeline |
-| Advanced SQL (CTEs, Window Functions) | Data Warehouse, Incentive Pipeline |
-| Multi-Source Data Integration | Data Warehouse, Incentive Pipeline, Intelligence Agent |
-| Data Quality Engineering | Data Warehouse |
-| Currency Normalization | Data Warehouse, Incentive Pipeline |
-| ML Proposal & Business Case Writing | Intelligence Agent |
-| Feature Engineering | Airfare, Fraud Detection |
-| Handling Class Imbalance | Fraud Detection |
-| Hyperparameter Tuning (RandomSearch) | Airfare, Fraud Detection |
-| Recursive Feature Elimination (RFE) | Airfare, Fraud Detection |
-| Log Transformation | Airfare |
-| Threshold Optimization | Fraud Detection |
-| Business Operationalization | Fraud Detection, Intelligence Agent |
-| Multicollinearity Detection | Fraud Detection |
-| Security & Access Control (RLS) | Intelligence Agent |
-
----
+```python
+from src.data_cleaning import clean_data
+from src.feature_engineering import engineer_features
+from src.model import train_model
+from src.evaluation import evaluate_model
+```
 
 ## Tech Stack
-Python · pandas · NumPy · scikit-learn · XGBoost · matplotlib · seaborn · Multi-Agent Orchestration · SQL · Cloud Data Warehouse · S3 · Parquet · BI Dashboards · RAG
+
+- Python 3.13
+- pandas, numpy
+- scikit-learn
+- XGBoost
+- matplotlib, seaborn
