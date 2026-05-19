@@ -21,7 +21,7 @@ Multi-source AI agent combining qualitative knowledge (wikis, PDFs) with quantit
 
 ---
 
-### 2. [🔄 ETL Pipeline — Multi-Source Data Warehouse](./etl-data-warehouse-pipeline/)
+### 2. [🔄 ETL Pipeline — Multi-Source Data Warehouse](./etl-pipeline-design/)
 
 Production ETL pipeline consolidating 3 disparate source systems into a unified analytical layer with currency normalization, deduplication, billing reconciliation, and data lake export.
 
