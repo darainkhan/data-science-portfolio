@@ -19,7 +19,7 @@ pip install numpy pandas scikit-learn
 python customer_segmentation_analysis.py
 ```
 
-Single file, no dependencies beyond numpy/pandas/sklearn. Generates its own data and prints the full analysis to stdout.
+Single file, no dependencies beyond numpy/pandas/sklearn. Generates its own data and prints the full analysis.
 
 ## Techniques
 
