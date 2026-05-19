@@ -9,6 +9,7 @@ End-to-end machine learning projects, data engineering pipelines, and agentic AI
 ## Projects
 
 ### 1. [🤖 Agentic AI — Multi-Source Intelligence System](./agentic-ai-funding-agent/)
+
 Multi-source AI agent combining qualitative knowledge (wikis, PDFs) with quantitative data analysis (SQL) to serve as a unified intelligence layer for enterprise operations.
 
 | Component | Detail |
@@ -21,6 +22,7 @@ Multi-source AI agent combining qualitative knowledge (wikis, PDFs) with quantit
 ---
 
 ### 2. [🔄 ETL Pipeline — Multi-Source Data Warehouse](./etl-data-warehouse-pipeline/)
+
 Production ETL pipeline consolidating 3 disparate source systems into a unified analytical layer with currency normalization, deduplication, billing reconciliation, and data lake export.
 
 | Component | Detail |
@@ -32,7 +34,21 @@ Production ETL pipeline consolidating 3 disparate source systems into a unified 
 
 ---
 
-### 3. [🔒 PayPal Fraud Detection](./paypal-fraud-detection/)
+### 3. [🎯 Customer Segmentation with K-Means & PCA](./customer-segmentation-kmeans/)
+
+Unsupervised learning pipeline that segments customers into actionable clusters based on loyalty program participation, purchase behavior, and retention metrics.
+
+| Metric | Result |
+|--------|--------|
+| Method | PCA (74 → 13 features) + K-Means (k=4) |
+| Variance Captured | 90%+ with 13 principal components |
+| Segments Found | 4 distinct clusters with clear business interpretation |
+| Key Techniques | StandardScaler, PCA component analysis, elbow method, cluster profiling |
+
+---
+
+### 4. [🔒 PayPal Fraud Detection](./paypal-fraud-detection/)
+
 Detecting fraudulent transactions with a two-threshold operationalization system (LOCK / ALERT / ALLOW).
 
 | Metric | Result |
@@ -43,7 +59,8 @@ Detecting fraudulent transactions with a two-threshold operationalization system
 
 ---
 
-### 4. [🍕 DoorDash Fraudulent Customer Detection](./doordash-fraud-detection/)
+### 5. [🍕 DoorDash Fraudulent Customer Detection](./doordash-fraud-detection/)
+
 Detecting fraudulent consumer accounts using behavioral and transactional features with XGBoost, featuring missingness-as-a-signal engineering and precision-recall threshold analysis.
 
 | Metric | Result |
@@ -55,7 +72,8 @@ Detecting fraudulent consumer accounts using behavioral and transactional featur
 
 ---
 
-### 5. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
+### 6. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
+
 Predicting flight ticket prices using XGBoost Regressor with log-transformed targets.
 
 | Metric | Result |
@@ -77,20 +95,24 @@ Predicting flight ticket prices using XGBoost Regressor with log-transformed tar
 | Advanced SQL (CTEs, Window Functions) | Data Warehouse, Incentive Pipeline |
 | Multi-Source Data Integration | Data Warehouse, Incentive Pipeline, Intelligence Agent |
 | Data Quality Engineering | Data Warehouse |
-| Currency Normalization | Data Warehouse, Incentive Pipeline |
+| Normalization | Data Warehouse, Incentive Pipeline |
 | ML Proposal & Business Case Writing | Intelligence Agent |
-| Feature Engineering | Airfare, Fraud Detection (PayPal), Fraud Detection (DoorDash) |
+| Unsupervised Learning (PCA, K-Means) | Customer Segmentation |
+| Cluster Analysis & Profiling | Customer Segmentation |
+| Dimensionality Reduction | Customer Segmentation |
+| Feature Engineering | Airfare, Fraud Detection (PayPal), Fraud Detection (DoorDash), Customer Segmentation |
 | Handling Class Imbalance | Fraud Detection (PayPal), Fraud Detection (DoorDash) |
 | Hyperparameter Tuning (Grid/RandomSearch) | Airfare, Fraud Detection (PayPal), Fraud Detection (DoorDash) |
 | Recursive Feature Elimination (RFE/RFECV) | Airfare, Fraud Detection (PayPal), Fraud Detection (DoorDash) |
 | Log Transformation | Airfare |
 | Threshold Optimization | Fraud Detection (PayPal), Fraud Detection (DoorDash) |
 | Missing Value Engineering | Fraud Detection (DoorDash) |
-| Business Operationalization | Fraud Detection (PayPal), Fraud Detection (DoorDash), Intelligence Agent |
+| Business Operationalization | Fraud Detection (PayPal), Fraud Detection (DoorDash), Intelligence Agent, Customer Segmentation |
 | Multicollinearity Detection | Fraud Detection |
 | Security & Access Control (RLS) | Intelligence Agent |
 
 ---
 
 ## Tech Stack
+
 Python · pandas · NumPy · scikit-learn · XGBoost · matplotlib · seaborn · Multi-Agent Orchestration · SQL · Cloud Data Warehouse · S3 · Parquet · BI Dashboards · RAG
