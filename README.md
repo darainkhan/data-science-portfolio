@@ -72,7 +72,7 @@ Detecting fraudulent consumer accounts using behavioral and transactional featur
 
 ---
 
-### 6. [📰 Real-Time News Sentiment API](./aws-realtime-news-sentiment/)
+### 6. [📰 Real-Time News Sentiment API](./Aws Realtime News Sentiment/)
 
 Production ML inference service that scores financial news headlines for sentiment in real-time. Streams live market news via Alpaca WebSocket, classifies sentiment using a transformer model, and serves predictions through a REST API — deployed on AWS.
 
