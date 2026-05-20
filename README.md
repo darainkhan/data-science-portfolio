@@ -21,7 +21,7 @@ Multi-source AI agent combining qualitative knowledge (wikis, PDFs) with quantit
 
 ---
 
-### 2. [🔄 ETL Pipeline — Multi-Source Data Warehouse](./etl-pipeline-design/)
+### 2. [🔄 ETL Pipeline — Multi-Source Data Warehouse](./etl-data-warehouse-pipeline/)
 
 Production ETL pipeline consolidating 3 disparate source systems into a unified analytical layer with currency normalization, deduplication, billing reconciliation, and data lake export.
 
@@ -72,7 +72,21 @@ Detecting fraudulent consumer accounts using behavioral and transactional featur
 
 ---
 
-### 6. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
+### 6. [📰 Real-Time News Sentiment API](./aws-realtime-news-sentiment/)
+
+Production ML inference service that scores financial news headlines for sentiment in real-time. Streams live market news via Alpaca WebSocket, classifies sentiment using a transformer model, and serves predictions through a REST API — deployed on AWS.
+
+| Component | Detail |
+|-----------|--------|
+| Model | DistilBERT (HuggingFace, fine-tuned SST-2) |
+| API | FastAPI with Pydantic schema validation |
+| Streaming | Alpaca News WebSocket → real-time scoring |
+| Deployment | Docker → AWS ECS + Elastic Load Balancer |
+| Key Techniques | Model serving, async WebSocket streaming, containerized inference |
+
+---
+
+### 7. [✈️ Airfare Price Prediction](./airfare-price-prediction/)
 
 Predicting flight ticket prices using XGBoost Regressor with log-transformed targets.
 
@@ -90,12 +104,18 @@ Predicting flight ticket prices using XGBoost Regressor with log-transformed tar
 |-------|----------|
 | Agentic AI / Multi-Agent Systems | Intelligence Agent |
 | RAG Architecture | Intelligence Agent |
+| ML Model Serving / Inference APIs | News Sentiment API |
+| Real-Time Data Streaming | News Sentiment API |
+| API Design (REST / FastAPI) | News Sentiment API |
+| Containerization (Docker) | News Sentiment API |
+| Cloud Deployment (AWS ECS/ELB) | News Sentiment API |
+| NLP / Transformers (HuggingFace) | News Sentiment API |
 | ETL Pipeline Design | Data Warehouse, Incentive Pipeline |
 | Data Warehousing | Data Warehouse, Incentive Pipeline |
 | Advanced SQL (CTEs, Window Functions) | Data Warehouse, Incentive Pipeline |
 | Multi-Source Data Integration | Data Warehouse, Incentive Pipeline, Intelligence Agent |
 | Data Quality Engineering | Data Warehouse |
-| Normalization | Data Warehouse, Incentive Pipeline |
+| Currency Normalization | Data Warehouse, Incentive Pipeline |
 | ML Proposal & Business Case Writing | Intelligence Agent |
 | Unsupervised Learning (PCA, K-Means) | Customer Segmentation |
 | Cluster Analysis & Profiling | Customer Segmentation |
@@ -115,4 +135,4 @@ Predicting flight ticket prices using XGBoost Regressor with log-transformed tar
 
 ## Tech Stack
 
-Python · pandas · NumPy · scikit-learn · XGBoost · matplotlib · seaborn · Multi-Agent Orchestration · SQL · Cloud Data Warehouse · S3 · Parquet · BI Dashboards · RAG
+Python · pandas · NumPy · scikit-learn · XGBoost · matplotlib · seaborn · FastAPI · PyTorch · HuggingFace Transformers · Docker · Multi-Agent Orchestration · SQL · Cloud Data Warehouse · AWS ECS · S3 · Parquet · BI Dashboards · RAG
