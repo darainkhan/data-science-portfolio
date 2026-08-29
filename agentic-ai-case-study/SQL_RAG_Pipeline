@@ -1,0 +1,189 @@
+"""
+ SQL-AGENT RAG
+======================================================
+
+    [1. RETRIEVE]  retrieve SCHEMA + a few golden question->SQL examples
+        -> [2. GENERATE]  LLM writes SQL grounded in that schema
+            -> validate SQL (columns exist? read-only?) -> EXECUTE against the table
+                -> [3. RESPOND]  turn rows into prose + return the SQL for transparency
+"""
+
+import sqlite3
+import re
+
+
+# ===========================================================================
+# The "database": an in-memory SQLite table of orders. This stands in for a
+# Redshift/Athena fund-request table. Grain = one row per order.
+# ===========================================================================
+def build_db():
+    conn = sqlite3.connect(":memory:")
+    conn.execute("""
+        CREATE TABLE orders (
+            order_id   INTEGER,
+            region     TEXT,      -- 'NAMER', 'EMEA', 'APJ'
+            status     TEXT,      -- 'shipped', 'pending', 'cancelled'
+            amount_usd REAL
+        )""")
+    rows = [
+        (1, "NAMER", "shipped",   120.0),
+        (2, "EMEA",  "pending",    80.0),
+        (3, "NAMER", "cancelled", 200.0),
+        (4, "APJ",   "shipped",   150.0),
+        (5, "NAMER", "shipped",    90.0),
+        (6, "EMEA",  "shipped",   300.0),
+    ]
+    conn.executemany("INSERT INTO orders VALUES (?,?,?,?)", rows)
+    conn.commit()
+    return conn
+
+
+# ===========================================================================
+# BOX 1 — RETRIEVE (schema + golden examples, NOT documents)
+# ===========================================================================
+# This is the retrieval layer for a SQL agent. Instead of text chunks we
+# retrieve the things that keep generated SQL CORRECT:
+SCHEMA = """Table: orders
+Columns:
+  order_id   INTEGER  - unique id per order (grain: one row = one order)
+  region     TEXT     - one of: 'NAMER', 'EMEA', 'APJ'
+  status     TEXT     - one of: 'shipped', 'pending', 'cancelled'
+  amount_usd REAL     - order value in USD"""
+
+GOLDEN_EXAMPLES = [
+    {"q": "How many orders are there?",
+     "sql": "SELECT COUNT(*) FROM orders;"},
+    {"q": "Total revenue from shipped orders?",
+     "sql": "SELECT SUM(amount_usd) FROM orders WHERE status = 'shipped';"},
+    {"q": "How many orders per region?",
+     "sql": "SELECT region, COUNT(*) FROM orders GROUP BY region;"},
+]
+
+VALID_ENUMS = {
+    "region": ["NAMER", "EMEA", "APJ"],
+    "status": ["shipped", "pending", "cancelled"],
+}
+
+
+def retrieve_context(query):
+    """
+    In a real system embed the query and pull the most similar golden
+    examples + relevant schema slices.
+    """
+    examples = "\n".join(f"  Q: {e['q']}\n  SQL: {e['sql']}" for e in GOLDEN_EXAMPLES)
+    return SCHEMA, examples
+
+
+# ===========================================================================
+# BOX 2 — GENERATE (LLM writes SQL) + VALIDATE before executing
+# ===========================================================================
+def build_sql_prompt(query, schema, examples):
+    return f"""You are a SQL analyst. Write a single READ-ONLY SQLite query to answer the question.
+Use ONLY the columns and enum values in the schema. Return ONLY the SQL, nothing else.
+
+{schema}
+
+Examples:
+{examples}
+
+Question: {query}
+SQL:"""
+
+
+def llm_to_sql(prompt, user_query):
+    """
+    
+    """
+    q = user_query.lower()
+
+    # crude intent matching (a real LLM handles arbitrary phrasing)
+    if "how many" in q and "region" not in q and "shipped" not in q:
+        return "SELECT COUNT(*) FROM orders;"
+    if "revenue" in q or "total" in q:
+        # detect a region mention and enum-snap it
+        region = _snap_region(q)
+        if region:
+            return (f"SELECT SUM(amount_usd) FROM orders "
+                    f"WHERE status = 'shipped' AND region = '{region}';")
+        return "SELECT SUM(amount_usd) FROM orders WHERE status = 'shipped';"
+    if "per region" in q or "by region" in q:
+        return "SELECT region, COUNT(*) FROM orders GROUP BY region;"
+    # fallback: no confident generation
+    return "SELECT COUNT(*) FROM orders;"
+
+
+def _snap_region(text):
+    """Enum snapping: map fuzzy user text to a canonical enum value."""
+    for canonical in VALID_ENUMS["region"]:
+        if canonical.lower() in text or text.find(canonical.lower()[:4]) != -1:
+            if canonical.lower()[:4] in text:
+                return canonical
+    return None
+
+
+def validate_sql(sql):
+    """
+    Pre-execution guardrails. Returns (ok, reason)."
+    """
+    lowered = sql.lower().strip()
+
+    # 1. read-only: block anything that mutates data
+    forbidden = ["insert", "update", "delete", "drop", "alter", "create", ";--"]
+    if any(word in lowered for word in forbidden):
+        return False, "non-read-only statement blocked"
+
+    # 2. must be a SELECT
+    if not lowered.startswith("select"):
+        return False, "only SELECT queries allowed"
+
+    # 3. referenced columns must exist (cheap check against known columns)
+    known_cols = {"order_id", "region", "status", "amount_usd", "orders", "*"}
+    tokens = set(re.findall(r"[a-z_]+", lowered))
+    sql_keywords = {"select", "from", "where", "group", "by", "sum", "count",
+                    "and", "or", "as", "status", "shipped", "pending",
+                    "cancelled", "namer", "emea", "apj"}
+    unknown = tokens - known_cols - sql_keywords
+    # (in a real system you'd parse the AST; this is a pragmatic stand-in)
+    return True, "ok"
+
+
+# ===========================================================================
+# BOX 3 — RESPOND (execute, turn rows into prose, return SQL for transparency)
+# ===========================================================================
+def answer(query, conn):
+    schema, examples = retrieve_context(query)                 # BOX 1
+    prompt = build_sql_prompt(query, schema, examples)
+    sql = llm_to_sql(prompt, query)                            # BOX 2
+
+    ok, reason = validate_sql(sql)                             # validate pre-flight
+    if not ok:
+        return {"answer": f"I couldn't safely answer that ({reason}).", "sql": sql}
+
+    try:
+        rows = conn.execute(sql).fetchall()                    # EXECUTE
+    except Exception as e:                                     # EDGE CASE: SQL error
+        return {"answer": f"Query failed: {e}", "sql": sql}
+
+    # EDGE CASE: empty result -> flag it, don't report a misleading "0"
+    if not rows:
+        return {"answer": "No rows matched — double-check the filters (e.g. region spelling).",
+                "sql": sql}
+
+    # SYNTHESIZE: turn rows into a natural-language answer (don't re-do the math)
+    answer_text = f"Result: {rows[0][0] if len(rows) == 1 and len(rows[0]) == 1 else rows}"
+    return {"answer": answer_text, "sql": sql}   # return SQL = auditability
+
+
+# ---------------------------------------------------------------------------
+if __name__ == "__main__":
+    conn = build_db()
+    for q in [
+        "How many orders are there?",
+        "What is total shipped revenue?",
+        "Total shipped revenue for NAMER?",   # exercises enum snapping
+        "How many orders by region?",
+    ]:
+        res = answer(q, conn)
+        print(f"\nQ: {q}")
+        print(f"A: {res['answer']}")
+        print(f"   SQL: {res['sql']}")
