@@ -13,8 +13,7 @@ import re
 
 
 # ===========================================================================
-# The "database": an in-memory SQLite table of orders. This stands in for a
-# Redshift/Athena fund-request table. Grain = one row per order.
+# The "database": an in-memory SQLite table of orders.
 # ===========================================================================
 def build_db():
     conn = sqlite3.connect(":memory:")
