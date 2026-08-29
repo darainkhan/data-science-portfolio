@@ -1,0 +1,79 @@
+"""
+EXAMPLE 2 — Creating an MCP tool with the SDK (FastMCP)
+============================================================
+
+
+WHAT THE SDK DOES :
+    * the initialize handshake            -> automatic
+    * tools/list schema generation        -> read from your type hints + docstring
+    * tools/call dispatch                  -> matches name -> your function
+    * the stdin/stdout JSON-RPC loop       -> mcp.run()
+    * JSON-RPC error envelopes             -> raise a normal exception
+
+
+
+HOW TO RUN IT:
+    python 02_fastmcp_server.py          # runs as a real stdio MCP server
+    mcp dev 02_fastmcp_server.py         # opens the MCP Inspector UI to poke it
+"""
+
+# The SDK. If this import fails, you haven't installed it yet:
+#   pip install "mcp[cli]"
+from mcp.server.fastmcp import FastMCP
+
+
+# Create the server. The name shows up in the client's UI and logs.
+mcp = FastMCP("teaching-mcp")
+
+
+# ===========================================================================
+# TOOLS — just decorate a normal function. Compare to the TOOLS dict in file 01.
+# ===========================================================================
+# Notice there is NO schema written by hand. FastMCP inspects:
+#   * the parameter names + type hints  -> inputSchema.properties + required
+#   * the docstring                     -> the tool's description
+# The model reads BOTH to decide when and how to call this. Write them for a
+# reader who has never seen your code — because that reader is the model.
+
+@mcp.tool()
+def add(a: float, b: float) -> float:
+    """Add two numbers together and return the sum."""
+    return a + b
+
+
+@mcp.tool()
+def greet(name: str) -> str:
+    """Greet a person by name."""
+    return f"Hello, {name}! This greeting came from your MCP server."
+
+@mcp.tool()
+def subtract(a:float,b:float)-> float:
+    """ Subtract 2 numbers """
+    return b-a
+
+
+@mcp.tool()
+def convert_temperature(value: float, unit: str = "C") -> str:
+    """Convert a temperature between Celsius and Fahrenheit.
+
+    Args:
+        value: The numeric temperature to convert.
+        unit:  The unit of `value` — "C" (Celsius) or "F" (Fahrenheit).
+               Defaults to "C". The result is returned in the OTHER unit.
+    """
+    unit = unit.upper()
+    if unit == "C":
+        return f"{value}°C = {value * 9 / 5 + 32:.1f}°F"
+    if unit == "F":
+        return f"{value}°F = {(value - 32) * 5 / 9:.1f}°C"
+    
+    raise ValueError(f"unit must be 'C' or 'F', got {unit!r}")
+
+
+# ===========================================================================
+# RUN 
+# ===========================================================================
+if __name__ == "__main__":
+    # transport="stdio" is the default (local servers launched by the client).
+    # File 04 shows the HTTP transport for remote servers.
+    mcp.run()
